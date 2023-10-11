@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Total Balance</title>
+    <!-- Add Bootstrap CSS link -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>The Total Balance</h1>
+        
+        <!-- Add date input fields -->
+        <div class="form-group">
+            <label for="start_date">Start Date:</label>
+            <input type="date" class="form-control" id="start_date" style="width: 150px;">
+        </div>
+        <div class="form-group">
+            <label for="end_date">End Date:</label>
+            <input type="date" class="form-control" id="end_date" style="width: 150px;">
+        </div>
+        
+        <button id="getBalanceSumButton" class="btn btn-primary">Get Balance Sum</button>
+
+        <!-- Add a div element with Bootstrap styles to display the response data -->
+        <div id="response" class="mt-4"></div>
+
+        <!-- Add a div element to display the total_balance -->
+        <div id="total_balance" class="mt-4"></div>
+    </div>
+
+    <!-- Include jQuery and Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#getBalanceSumButton').click(function () {
+                // Retrieve start_date and end_date values from the input fields
+                var start_date = $('#start_date').val();
+                var end_date = $('#end_date').val();
+                
+                // Make an AJAX request to initiate GetBalanceSumView with dynamic dates
+                $.ajax({
+                    url: '/api/get-balance-sum/',  // URL for the GetBalanceSumView
+                    type: 'GET',
+                    data: {
+                        start_date: start_date,
+                        end_date: end_date
+                    },
+                    success: function (data) {
+                        // Clear existing content
+                        $('#response').empty();
+                        
+                        // Check if there is data in the response
+                        if (data.response.length > 0) {
+                            // Create a Bootstrap table to display the response data
+                            var tableHtml = '<table class="table">';
+                            tableHtml += '<thead><tr><th>Account ID</th><th>Account Name</th><th>Balance</th><th>Root ID</th><th>Movement Date</th></tr></thead><tbody>';
+                            $.each(data.response, function (index, item) {
+                                tableHtml += '<tr>';
+                                tableHtml += '<td>' + item.account_id + '</td>';
+                                tableHtml += '<td>' + item.account_name + '</td>';
+                                tableHtml += '<td>' + item.balance + '</td>';
+                                tableHtml += '<td>' + item.account_root_id + '</td>';
+                                tableHtml += '<td>' + item.movement_date + '</td>';
+                                tableHtml += '</tr>';
+                            });
+                            tableHtml += '</tbody></table>';
+                            $('#response').html(tableHtml);
+                            
+                            // Display the total_balance value
+                            $('#total_balance').text('Total Balance: ' + data.total_balance);
+                        } else {
+                            // Handle the case when the response is empty
+                            $('#response').text('No data available.');
+                            
+                            // Clear the total_balance value
+                            $('#total_balance').empty();
+                        }
+                    },
+                    error: function (error) {
+                        // Handle any errors (if needed)
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
