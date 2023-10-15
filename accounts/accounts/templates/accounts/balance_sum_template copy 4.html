@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Total Balance</title>
+    
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Your CSS styles here */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-primary sidebar">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <!-- Menu options -->
+                        <li class="nav-item" data-page="total-balance">
+                            <a class="nav-link active" href="?page=total-balance">
+                                <i class="fas fa-balance-scale"></i> Balance Inquiry
+                            </a>
+                        </li>
+                        <li class="nav-item" data-page="general-ledger">
+                            <a class="nav-link" href="?page=general-ledger">
+                                <i class="fas fa-money-bill"></i> General Ledger
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div id="page-content">
+                    <!-- Shared content for both pages -->
+                    <h1>The Total Balance</h1>
+                    
+                    <!-- Add date input fields -->
+                    <!-- <div class="form-group">
+                        <label for="start_date">Start Date:</label>
+                        <input type="date" class="form-control" id="start_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">End Date:</label>
+                        <input type="date" class="form-control" id="end_date">
+                    </div> -->
+                    
+                    <!-- Add a dropdown list to select account IDs -->
+                    <!-- <div class="form-group">
+                        <label for="selected_account_id">Select Account ID:</label>
+                        <select class="form-control" id="selected_account_id">
+                            <option value="">-- Select Account ID --</option>
+                            {% for account_id in account_ids %}
+                                <option value="{{ account_id }}">{{ account_id }}</option>
+                            {% endfor %}
+                        </select>
+                    </div> -->
+            
+                    <div class="button-group">                        
+                        {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'logout' %}" class="d-inline">
+                          {% csrf_token %}
+                        <button type="submit" class="btn btn-danger ml-2">Logout</button>
+                    </form>
+                         {% endif %}
+                         <!-- <button type="button" id="clearFormButton" class="btn btn-secondary ml-2">Clear</button> -->
+                         <button type="button" id="clearFormButton" class="btn btn-secondary ml-2">Clear</button>
+
+                         <button id="getBalanceSumButton" class="btn btn-primary">Get Balance Sum</button>
+     
+                              <!-- Add a div element with Bootstrap styles to display the response data -->
+                         <div id="response" class="mt-4"></div>
+     
+                             <!-- Add a div element to display the total_balance -->
+                         <div id="total_balance" class="mt-4"></div>
+     
+                             <!-- Add a div element for the "No data available" message -->
+                         <!-- <div id="noDataMessage" class="alert alert-warning">No balances found.</div> -->
+                    </form>     
+                    </div>
+                </div>
+                <div id="page-content-general-ledger" style="display: none;">
+                    <!-- Shared content for both pages -->
+                    <h1>General Ledger</h1>
+                    
+                    <!-- Add date input fields -->
+                    <!-- <div class="form-group">
+                        <label for="start_date">Start Date:</label>
+                        <input type="date" class="form-control" id="start_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">End Date:</label>
+                        <input type="date" class="form-control" id="end_date">
+                    </div> -->
+                    
+                    <!-- Add a dropdown list to select account IDs -->
+                 <!-- <div class="form-group">
+                        <label for="selected_account_id">Select Account ID:</label>
+                        <select class="form-control" id="selected_account_id">
+                            <option value="">-- Select Account ID --</option>
+                            {% for account_id in account_ids %}
+                                <option value="{{ account_id }}">{{ account_id }}</option>
+                            {% endfor %}
+                        </select>
+                    </div> -->
+             
+            
+                    <div class="button-group">
+
+                        {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'logout' %}" class="d-inline">
+                          {% csrf_token %}
+                        <button type="submit" class="btn btn-danger ml-2">Logout</button>
+                    </form>
+                         {% endif %}
+                    <button type="button" id="clearFormButton" class="btn btn-secondary ml-2">Clear</button>
+
+                    <button id="getBalanceSumButton" class="btn btn-primary">Get Balance Sum</button>
+
+                         <!-- Add a div element with Bootstrap styles to display the response data -->
+                    <div id="response" class="mt-4"></div>
+
+                        <!-- Add a div element to display the total_balance -->
+                    <div id="total_balance" class="mt-4"></div>
+
+                        <!-- Add a div element for the "No data available" message -->
+                    <!-- <div id="noDataMessage" class="alert alert-warning">No balances found.</div> -->
+     
+                    </div>
+
+                    
+                </div>
+                <div class="form-group">
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" class="form-control" id="start_date">
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date:</label>
+                    <input type="date" class="form-control" id="end_date">
+                </div>
+                <div class="form-group">
+                    <label for="selected_account_id">Select Account ID:</label>
+                    <select class="form-control" id="selected_account_id">
+                        <option value="">-- Select Account ID --</option>
+                        {% for account_id in account_ids %}
+                            <option value="{{ account_id }}">{{ account_id }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Include jQuery and Bootstrap JavaScript from allowed sources -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        
+        $(document).ready(function() {
+            // Parse the URL to determine the desired page
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageParam = urlParams.get('page');
+            
+            // Load the specific page's content into the container
+            if (pageParam === 'general-ledger') {
+                $('#page-content').hide();
+                $('#page-content-general-ledger').show();
+                $('#selected_account_id').show();
+                
+                
+
+            } else {
+                $('#page-content').show();
+                $('#page-content-general-ledger').hide();
+                $('#selected_account_id').show();
+            }
+
+            $.ajax({
+        url: '/api/get-account-ids/',  // URL for the get_account_ids view
+        type: 'GET',
+        success: function (data) {
+            // Clear existing options
+            $('#selected_account_id').empty();
+
+            // Add an empty default option
+            $('#selected_account_id').append('<option value="">-- Select Account ID --</option>');
+
+            // Add each account ID as an option in the select field
+            $.each(data.account_ids, function (index, account_id) {
+                $('#selected_account_id').append('<option value="' + account_id.toString() + '">' + account_id.toString() + '</option>');
+            });
+        },
+        error: function (error) {
+            console.error('Error:', error);
+            }
+        });
+        $('#getBalanceSumButton').click(function () {
+    // Retrieve start_date, end_date, and selected_account_id values from the input fields
+    var start_date = $('#start_date').val();
+    var end_date = $('#end_date').val();
+    var selected_account_id = $('#selected_account_id').val();
+
+    // Check if "end_date" is required
+    if (end_date === '') {
+        // Display the "End Date is required" message in red
+        $('#response').html('<span style="color: red;">End Date is required.</span>');
+
+        // Clear the total_balance value
+        $('#total_balance').empty();
+        return; // Exit the function, preventing further processing
+    }
+
+    // Make an AJAX request to initiate GetBalanceSumView with dynamic dates and selected_account_id
+    $.ajax({
+        url: '/api/get-balance-sum/',  // URL for the GetBalanceSumView
+        type: 'GET',
+        data: {
+            start_date: start_date,
+            end_date: end_date,
+            selected_account_id: selected_account_id  // Include selected_account_id in the request
+        },
+        success: function (data) {
+            // Clear existing content
+            $('#response').empty();
+
+            if (data.response.length > 0) {
+                // Create a Bootstrap table to display the response data
+                var tableHtml = '<table class="table">';
+                tableHtml += '<thead><tr><th>Account ID</th><th>Account Name</th><th>Balance</th><th>Root ID</th><th>Movement Date</th></tr></thead><tbody>';
+                $.each(data.response, function (index, item) {
+                    tableHtml += '<tr>';
+                    tableHtml += '<td>' + item.account_id + '</td>';
+                    tableHtml += '<td>' + item.account_name + '</td>';
+                    tableHtml += '<td>' + item.balance + '</td>';
+                    tableHtml += '<td>' + item.root_id + '</td>';
+                    tableHtml += '<td>' + item.date + '</td>';
+                    tableHtml += '</tr>';
+                });
+                tableHtml += '</tbody></table>';
+                $('#response').html(tableHtml);
+
+                // Display the total_balance value
+                $('#total_balance').text('Total Balance: ' + data.total_balance);
+            } else {
+                // Handle the case when the response is empty
+                $('#response').text('No data available.');
+
+                // Clear the total_balance value
+                $('#total_balance').empty();
+            }
+        },
+        error: function (error) {
+            // Handle any errors (if needed)
+            console.error('Error:', error);
+        }
+    });
+    $('#clearFormButton').click(function () {
+        // Reset the date fields and the dropdown
+        $('#start_date, #end_date, #selected_account_id').val('');
+
+        // Clear any response and total balance messages
+        $('#response, #total_balance').empty();
+    });
+});
+});
+
+
+            
+    </script>
+</body>
+</html>

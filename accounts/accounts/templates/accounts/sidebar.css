@@ -1,0 +1,21 @@
+/* sidebar.css */
+.sidebar {
+    background-color: #343a40; /* Set the background color you desire */
+    color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+    width: 250px; /* Set the width you desire */
+}
+
+/*Remove hover effect for the sidebar */
+.sidebar:hover {
+    text-decoration: none; /* Remove underline on hover (optional) */
+    color: #fff; /* Set the text color on hover to the same color as the default state */
+    /* Reset any hover styles, or simply leave this section empty */
+}
+
+/* Remove hover effect for links in the sidebar */
+.sidebar a:hover {
+    text-decoration: none; /* Remove underline on hover (optional) */
+    color: #fff; /* Set the text color on hover to the same color as the default state */
+}

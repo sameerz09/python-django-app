@@ -5,111 +5,154 @@
     <title>The Total Balance</title>
     
     <!-- Add Bootstrap CSS link -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        body {
-            background-color: #f5f5f5;
-            font-family: 'Arial', sans-serif;
+        /* Custom CSS for fixing nav colors */
+        #sidebar {
+            background-color: #343a40; /* Change the background color to a darker shade */
+            color: white; /* Set text color to white */
         }
-        .container {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            margin-top: 20px;
-            max-width: 600px;
-            text-align: center;
+    
+        #sidebar .nav-link {
+            color: white; /* Set the link text color to white */
         }
-        h1 {
-            color: #007bff;
-        }
-        .form-group {
-            margin: 10px 0;
-        }
-        label {
-            font-weight: bold;
-        }
-        select, input[type="date"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .btn-primary {
-            width: 100%;
-            margin-top: 20px;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-        }
-        th {
-            background-color: #007bff;
-            color: #fff;
-        }
-        th, td {
-            text-align: center;
-            padding: 10px;
-        }
-        #total_balance {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        #noDataMessage {
-            color: #d9534f;
-            font-weight: bold;
-            margin-top: 20px;
-            display: none;
+    
+        #sidebar .nav-link.active {
+            background-color: #007bff; /* Set the active link background color */
         }
     </style>
+    
+
 </head>
 <body>
     <div class="container">
-        <h1>The Total Balance</h1>
-        
-        <!-- Add date input fields -->
-        <div class="form-group">
-            <label for="start_date">Start Date:</label>
-            <input type="date" class="form-control" id="start_date">
-        </div>
-        <div class="form-group">
-            <label for="end_date">End Date:</label>
-            <input type="date" class="form-control" id="end_date">
-        </div>
-        
-        <!-- Add a dropdown list to select account IDs -->
-        <div class="form-group">
-            <label for="selected_account_id">Select Account ID:</label>
-            <select class="form-control" id="selected_account_id">
-                <option value="">-- Select Account ID --</option>
-                {% for account_id in account_ids %}
-                    <option value="{{ account_id }}">{{ account_id }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        
-        <button id="getBalanceSumButton" class="btn btn-primary">Get Balance Sum</button>
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-primary sidebar">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item" data-page="reports">
+                            <a class="nav-link" href="#" data-toggle="collapse" data-target="#reports-menu">
+                                <i class="fas fa-chart-line"></i> Reports
+                            </a>
+                            <div id="reports-menu" class="submenu">
+                                <a class="nav-link" href="?page=total-balance">
+                                    <i class="fas fa-balance-scale"></i> Balance Inquiry
+                                </a>
+                                <a class="nav-link" href="?page=general-ledger">
+                                    <i class="fas fa-file-invoice-dollar"></i> General Ledger
+                                </a>
+                                <a class="nav-link" href="?page=income-statement">
+                                    <i class="fas fa-file-alt"></i> Income Statement
+                                </a>
+                                <a class="nav-link" href="?page=balance-sheet">
+                                    <i class="fas fa-balance-scale"></i> Balance Sheet
+                                </a>
+                                <a class="nav-link" href="?page=cash-flow">
+                                    <i class="fas fa-coins"></i> Cash Flow Statement
+                                </a>
+                           
+                                
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
 
-        <!-- Add a div element with Bootstrap styles to display the response data -->
-        <div id="response" class="mt-4"></div>
 
-        <!-- Add a div element to display the total_balance -->
-        <div id="total_balance" class="mt-4"></div>
 
-        <!-- Add a div element for the "No data available" message -->
-        <div id="noDataMessage" class="alert alert-warning">No balances found.</div>
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div id="page-content">
+                    <!-- Shared content for both pages -->
+                    <h1>The Total Balance</h1>
+                    
+                </div>
+                <div id="page-content-general-ledger" style="display: none;">
+                    <!-- Shared content for both pages -->
+                    <h1>General Ledger</h1>    
+                </div>
+                <div class="form-group">
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" class="form-control" id="start_date">
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date:</label>
+                    <input type="date" class="form-control" id="end_date">
+                </div>
+                <div class="form-group">
+                    <label for="selected_account_id">Select Account ID:</label>
+                    <select class="form-control" id="selected_account_id">
+                        <option value="">-- Select Account ID --</option>
+                        {% for account_id in account_ids %}
+                            <option value="{{ account_id }}">{{ account_id }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                 <div class="button-group">                        
+                    
+                         <button id="getBalanceSumButton" class="btn btn-primary">Get Balance Sum</button>
+
+                         <button id="getLedgerButton" class="btn btn-primary">Get Ledger Rebort</button>
+     
+                         <!-- <button type="button" id="clearFormButton" class="btn btn-secondary ml-2">Clear</button> -->
+                         <button type="button" id="clearFormButton" class="btn btn-secondary ml-2">Clear</button>
+
+                         {% if user.is_authenticated %}
+                         <form method="post" action="{% url 'logout' %}" class="d-inline">
+                               {% csrf_token %}
+                             <button type="submit" class="btn btn-danger ml-2">Logout</button>
+                         </form>
+                              {% endif %}
+
+                        
+                              <!-- Add a div element with Bootstrap styles to display the response data -->
+                         <div id="response" class="mt-4"></div>
+     
+                             <!-- Add a div element to display the total_balance -->
+                         <div id="total_balance" class="mt-4"></div>
+
+                       
+     
+                             <!-- Add a div element for the "No data available" message -->
+                         <!-- <div id="noDataMessage" class="alert alert-warning">No balances found.</div> -->
+                    </form>     
+                    </div>
+            </main>
+        </div>
     </div>
 
     <!-- Include jQuery and Bootstrap JavaScript from allowed sources -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script> 
     
-       $(document).ready(function () {
-    // Fetch the account IDs from your Django view using AJAX
-    $.ajax({
+    <script>
+        
+        $(document).ready(function() {
+            // Parse the URL to determine the desired page
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageParam = urlParams.get('page');
+            
+            // Load the specific page's content into the container
+            if (pageParam === 'general-ledger') {
+                $('#page-content').hide();
+                $('#page-content-general-ledger').show();
+                $('#selected_account_id').show();
+                $('#getLedgerButton').show();
+                $('#getBalanceSumButton').hide();
+                
+                
+
+            } else {
+                $('#page-content').show();
+                $('#page-content-general-ledger').hide();
+                $('#getLedgerButton').hide();
+                $('#getBalanceSumButton').show();
+            }
+
+            $.ajax({
         url: '/api/get-account-ids/',  // URL for the get_account_ids view
         type: 'GET',
         success: function (data) {
@@ -126,10 +169,9 @@
         },
         error: function (error) {
             console.error('Error:', error);
-        }
-    });
-
-    $('#getBalanceSumButton').click(function () {
+            }
+        });
+        $('#getBalanceSumButton').click(function () {
     // Retrieve start_date, end_date, and selected_account_id values from the input fields
     var start_date = $('#start_date').val();
     var end_date = $('#end_date').val();
@@ -138,7 +180,7 @@
     // Check if "end_date" is required
     if (end_date === '') {
         // Display the "End Date is required" message in red
-        $('#response').html('<span style="color: red;">End Date is required.</span>');
+        $('#response').html('<span style="color: red;">End date is required.</span>');
 
         // Clear the total_balance value
         $('#total_balance').empty();
@@ -146,6 +188,8 @@
     }
 
     // Make an AJAX request to initiate GetBalanceSumView with dynamic dates and selected_account_id
+
+  
     $.ajax({
         url: '/api/get-balance-sum/',  // URL for the GetBalanceSumView
         type: 'GET',
@@ -183,6 +227,75 @@
                 // Clear the total_balance value
                 $('#total_balance').empty();
             }
+       
+        },
+        error: function (error) {
+            // Handle any errors (if needed)
+            console.error('Error:', error);
+        }
+    });
+
+});
+$('#getLedgerButton').click(function () {
+    // Replace '6' with the actual account ID
+    var start_date = $('#start_date').val();
+    var end_date = $('#end_date').val();
+    var selected_account_id = $('#selected_account_id').val();
+
+    // Check if "end_date" is required
+    if (end_date === '') {
+        // Display the "End Date is required" message in red
+        $('#response').html('<span style="color: red;">End date is required.</span>');
+
+        // Clear the total_balance value
+        $('#total_balance').empty();
+        return; // Exit the function, preventing further processing
+    }
+
+    // Make an AJAX request to initiate GeneralLedgerView with dynamic dates and selected_account_id
+    $.ajax({
+        // url: '/general_ledger/' + selected_account_id + '/',
+        url: '/general_ledger/6',
+        type: 'GET',
+        data: {
+            // start_date: start_date,
+            // end_date: end_date,
+            // selected_account_id: selected_account_id,
+        },
+        success: function (data) {
+            // Clear existing content
+            $('#response').empty();
+
+            if (Array.isArray(data.general_ledger) && data.general_ledger.length > 0) {
+                // Create a Bootstrap table to display the ledger entries
+                var tableHtml = '<table class="table">';
+                tableHtml += '<thead><tr><th>Date</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody>';
+
+                $.each(data.general_ledger, function (index, item) {
+                    tableHtml += '<tr>';
+                    tableHtml += '<td>' + item.Date + '</td>';
+                    tableHtml += '<td>' + item.Debit + '</td>';
+                    tableHtml += '<td>' + item.Credit + '</td>';
+                    tableHtml += '<td>' + item.Balance + '</td>';
+                    tableHtml += '</tr>';
+                });
+
+                tableHtml += '</tbody></table>';
+                $('#response').html(tableHtml);
+
+                // Display the total_balance value (if available)
+                if (data.total_balance) {
+                    $('#total_balance').text('Total Balance: ' + data.total_balance);
+                } else {
+                    $('#total_balance').empty();
+                }
+            } else {
+                // Handle the case when the response is empty or not an array
+                $('#response').text('No data available.');
+
+                // Clear the total_balance value
+                $('#total_balance').empty();
+            }
         },
         error: function (error) {
             // Handle any errors (if needed)
@@ -190,8 +303,19 @@
         }
     });
 });
+
+$('#clearFormButton').click(function () {
+        // Reset the date fields and the dropdown
+        $('#start_date, #end_date, #selected_account_id').val('');
+
+        // Clear any response and total balance messages
+        $('#response, #total_balance').empty();
+    });
+
 });
 
+
+            
     </script>
 </body>
 </html>

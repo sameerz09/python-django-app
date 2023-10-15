@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Total Balance</title>
+    
+    <!-- Add Bootstrap CSS link -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar -->
+            <iframe src="nav.html" class="col-md-3 col-lg-2 d-md-block bg-primary sidebar"></iframe>            
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <h1>The Total Balance</h1>
+                
+                <!-- Add date input fields -->
+                <div class="form-group">
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" class="form-control" id="start_date">
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date:</label>
+                    <input type="date" class="form-control" id="end_date">
+                </div>
+                
+                <!-- Add a dropdown list to select account IDs -->
+                <div class="form-group">
+                    <label for="selected_account_id">Select Account ID:</label>
+                    <select class="form-control" id="selected_account_id">
+                        <option value="">-- Select Account ID --</option>
+                        {% for account_id in account_ids %}
+                            <option value="{{ account_id }}">{{ account_id }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+        
+                <div class="button-group">
+                    <button id="getBalanceSumButton" class="btn btn-primary">Get Balance Sum</button>
+                    
+                    {% if user.is_authenticated %}
+                    <button id="resetFormButton" class="btn btn-success ml-2">Reset</button>
+                    <form method="post" action="{% url 'logout' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger ml-2">Logout</button>
+                    </form>
+                    {% else %}
+                    <button class="btn btn-success ml-2">Login</button>
+                    {% endif %}
+                </div>
+                
+                
+                
+        
+        
+        <!-- Add a div element with Bootstrap styles to display the response data -->
+        <div id="response" class="mt-4"></div>
+
+        <!-- Add a div element to display the total_balance -->
+        <div id="total_balance" class="mt-4"></div>
+
+        <!-- Add a div element for the "No data available" message -->
+        <div id="noDataMessage" class="alert alert-warning">No balances found.</div>
+    </div>
+  
+
+    <!-- Include jQuery and Bootstrap JavaScript from allowed sources -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="main.js"></script>
+
+</body>
+</html>
