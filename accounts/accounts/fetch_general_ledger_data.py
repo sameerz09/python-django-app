@@ -1,67 +1,72 @@
 import xmlrpc.client
-from django.views import View
 from django.http import JsonResponse
-from requests import request
 from rest_framework.views import APIView
 from datetime import datetime
 
-def odoo_api(url, db, username, password, method, *args):
-    common = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common')
-    uid = common.authenticate(db, username, password, {})
-    models = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/object')
-    return models.execute_kw(db, uid, password, method, *args, {})
+class GetBalanceSumView(APIView):
+    def get(self, request):
+        # Replace these with your Odoo server details
+        odoo_url = 'http://127.0.0.1:9069'
+        odoo_db = 'testkmnss'
+        odoo_username = 'sameerz09@hotmail.com'
+        odoo_password = 'Test@111'
 
+        # Replace these with your target date range
+        start_date = request.GET.get('start_date', '2023-01-01')
+        end_date = request.GET.get('end_date', '2023-10-01')
+        selected_account_id = request.GET.get('selected_account_id', '7')
 
-def fetch_ledger(account_number, url, db, username, password):
-    try:
-        # Set your Odoo server details
+        # Check if "end_date" is not provided or in an incorrect format
+#        if not end_date:
+ #           return JsonResponse({"error": "End date is required."}, status=400)
 
-        # Fetch the account_id based on the provided account_number
-        selected_account_id = 6
+        try:
+            # Create XML-RPC server proxies for common and models
+            common = xmlrpc.client.ServerProxy(f'{odoo_url}/xmlrpc/2/common')
+            models = xmlrpc.client.ServerProxy(f'{odoo_url}/xmlrpc/2/object')
 
-        # Get the account name
-        account_data = odoo_api(url, db, username, password, 'account.account', 'read', [selected_account_id])
-        account_name = account_data[0]['name']
-        # date_start = request.GET.get('start_date', '2023-01-01')
-        # date_end = request.GET.get('end_date', '2023-10-01')
-        # selected_account_id = request.GET.get('selected_account_id', '6')
-        
+            # Authenticate and get user ID
+            uid = common.authenticate(odoo_db, odoo_username, odoo_password, {})
 
-        # Call the 'getbalance' method to fetch the general ledger data
-        balances = odoo_api(url, db, username, password, 'account.account', 'general_ledger', ['2023-01-01', '2023-10-01', selected_account_id])
+            # Call the getbalance method with date range parameters and the selected account ID
+            balances = models.execute_kw(
+                odoo_db,
+                uid,
+                odoo_password,
+                'account.account',
+                'ledger_debit_credit',
+                [start_date, end_date, selected_account_id],
+                {}
+            )
 
-        ledger_entries = []
+            # Initialize the total balance variable and response data list
+            total_balance = 0.0
+            response_data = []
 
-        if isinstance(balances, list) and balances:
+            if not balances:
+                return JsonResponse({"message": "No data available", "response": []})
+
             for balance in balances:
-                debit = balance['balance'] if balance['balance'] >= 0 else 0
-                credit = abs(balance['balance']) if balance['balance'] < 0 else 0
-                entry = {
-                    "Account Name": account_name,  # Include the account name
-                    "Date": balance['date'],
-                    "Debit": debit,
-                    "Credit": credit,
-                    "Balance": balance['balance']
-                }
-                ledger_entries.append(entry)
+                response_data.append({
+                    "root_id": balance['root_id'],
+                    "account_name": balance['account_name'],    
+                    "date": balance['date'],
+                    "debit": balance['debit'],
+                    "credit": balance['credit'],
+                    "balance": balance['balance']
+                })
 
-        return ledger_entries
+                # Add the balance to the total balance
+                total_balance += balance['balance']
 
-    except xmlrpc.client.Fault as err:
-        return []  # Return an empty list for this account due to an XML-RPC fault
-    except Exception as e:
-        return []  # Return an empty list for this account due to other errors
+            # Return the response data as JSON along with the total balance
+            return JsonResponse({
+                "status": "success",
+                "response": response_data,
+                "total_balance": total_balance
+            })
 
-class Reports(View):
-    def get(self, request, account_number):
-        # Set your Odoo server details
-        url = 'http://127.0.0.1:9069'
-        db = 'testkmnss'
-        username = 'sameerz09@hotmail.com'
-        password = 'Test@111'
+        # Handle exceptions if authentication or API calls fail
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
 
-        # Fetch the general ledger data
-        ledger_entries = fetch_ledger(account_number, url, db, username, password)
-
-        # Return the general ledger data as a JSON response
-        return JsonResponse({'general_ledger': ledger_entries})

@@ -83,14 +83,16 @@
                     <input type="date" class="form-control" id="end_date">
                 </div>
                 <div class="form-group">
-                    <label for="selected_account_id">Select Account ID:</label>
-                    <select class="form-control" id="selected_account_id">
-                        <option value="">-- Select Account ID --</option>
-                        {% for account_id in account_ids %}
-                            <option value="{{ account_id }}">{{ account_id }}</option>
+                    <label for="selected_account_id">Select Account:</label>
+                    <select class="form-control" id="selected_account_id" name="selected_account_id">
+                        <option value="">-- Select Account --</option>
+                        {% for account in account_data %}
+                            <option value="{{ account.id }}">{{ account.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
+                        
+                
                  <div class="button-group">                        
                     
                          <button id="getBalanceSumButton" class="btn btn-primary">Get Balance Sum</button>
@@ -153,26 +155,98 @@
             }
 
             $.ajax({
-        url: '/api/get-account-ids/',  // URL for the get_account_ids view
-        type: 'GET',
-        success: function (data) {
-            // Clear existing options
-            $('#selected_account_id').empty();
+    url: '/api/get-account-ids/',  // URL for the get_account_ids view
+    type: 'GET',
+    success: function (data) {
+        // Clear existing options
+        $('#selected_account_id').empty();
 
-            // Add an empty default option
-            $('#selected_account_id').append('<option value="">-- Select Account ID --</option>');
+        // Add an empty default option
+        $('#selected_account_id').append('<option value="">-- Select Account --</option>');
 
-            // Add each account ID as an option in the select field
-            $.each(data.account_ids, function (index, account_id) {
-                $('#selected_account_id').append('<option value="' + account_id.toString() + '">' + account_id.toString() + '</option>');
-            });
-        },
-        error: function (error) {
-            console.error('Error:', error);
-            }
+        // Add each account as an option in the select field
+        $.each(data.account_data, function (index, account) {
+            $('#selected_account_id').append('<option value="' + account.id + '">' + account.name + '</option>');
         });
+    },
+    error: function (error) {
+        console.error('Error:', error);
+    }
+});
         $('#getBalanceSumButton').click(function () {
     // Retrieve start_date, end_date, and selected_account_id values from the input fields
+    var start_date = $('#start_date').val();
+    var end_date = $('#end_date').val();
+    // var selected_account_id = $('#selected_account_id').val();
+    var selected_account_id = $('#selected_account_id option:selected').val();
+
+    if (!isNaN(selected_account_id) && parseInt(selected_account_id) === parseFloat(selected_account_id)) {
+        // It's a valid integer, you can proceed with further processing
+    } else {
+        console.error('Invalid selected_account_id:', selected_account_id);
+        // Handle the error condition or provide a user-friendly message
+    }
+
+    // Check if "end_date" is required
+    if (end_date === '') {
+        // Display the "End Date is required" message in red
+        $('#response').html('<span style="color: red;">End date is required.</span>');
+
+        // Clear the total_balance value
+        $('#total_balance').empty();
+        return; // Exit the function, preventing further processing
+
+    }
+
+    // Make an AJAX request to initiate GetBalanceSumView with dynamic dates and selected_account_id
+
+  
+    $.ajax({
+        url: '/api/get-balance-sum/',  // URL for the GetBalanceSumView
+        type: 'GET',
+        data: {
+            start_date: start_date,
+            end_date: end_date,
+            selected_account_id: selected_account_id  // Include selected_account_id in the request
+        },
+        success: function (data) {
+            // Clear existing content
+            $('#response').empty();
+
+            if (data.response.length > 0) {
+                // Create a Bootstrap table to display the response data
+                var tableHtml = '<table class="table">';
+                tableHtml += '<thead><tr><th>Root ID</th><th>Account Name</th><th>Balance</th><th>Movement Date</th></tr></thead><tbody>';
+                $.each(data.response, function (index, item) {
+                    tableHtml += '<tr>';
+                    tableHtml += '<td>' + item.root_id + '</td>';
+                    tableHtml += '<td>' + item.account_name + '</td>';
+                    tableHtml += '<td>' + item.balance + '</td>';
+                    tableHtml += '<td>' + item.date + '</td>';
+                    tableHtml += '</tr>';
+                });
+                tableHtml += '</tbody></table>';
+                $('#response').html(tableHtml);
+
+                // Display the total_balance value
+                $('#total_balance').text('Total Balance: ' + data.total_balance);
+            } else {
+                // Handle the case when the response is empty
+                $('#response').text('No data available.');
+
+                // Clear the total_balance value
+                $('#total_balance').empty();
+            }
+       
+        },
+        error: function (error) {
+            // Handle any errors (if needed)
+            console.error('Error:', error);
+        }
+    });
+
+});
+$('#getLedgerButton').click(function () {// Retrieve start_date, end_date, and selected_account_id values from the input fields
     var start_date = $('#start_date').val();
     var end_date = $('#end_date').val();
     var selected_account_id = $('#selected_account_id').val();
@@ -205,13 +279,14 @@
             if (data.response.length > 0) {
                 // Create a Bootstrap table to display the response data
                 var tableHtml = '<table class="table">';
-                tableHtml += '<thead><tr><th>Account ID</th><th>Account Name</th><th>Balance</th><th>Root ID</th><th>Movement Date</th></tr></thead><tbody>';
+                tableHtml += '<thead><tr><th>Root ID</th><th>Account Name</th><th>Debit</th><th>Credit</th><th>Balance</th><th>Movement Date</th></tr></thead><tbody>';
                 $.each(data.response, function (index, item) {
                     tableHtml += '<tr>';
-                    tableHtml += '<td>' + item.account_id + '</td>';
-                    tableHtml += '<td>' + item.account_name + '</td>';
-                    tableHtml += '<td>' + item.balance + '</td>';
                     tableHtml += '<td>' + item.root_id + '</td>';
+                    tableHtml += '<td>' + item.account_name + '</td>';
+                    tableHtml += '<td>' + item.debit + '</td>';
+                    tableHtml += '<td>' + item.credit + '</td>';
+                    tableHtml += '<td>' + item.balance + '</td>';
                     tableHtml += '<td>' + item.date + '</td>';
                     tableHtml += '</tr>';
                 });
@@ -235,73 +310,6 @@
         }
     });
 
-});
-$('#getLedgerButton').click(function () {
-    // Replace '6' with the actual account ID
-    var start_date = $('#start_date').val();
-    var end_date = $('#end_date').val();
-    var selected_account_id = $('#selected_account_id').val();
-
-    // Check if "end_date" is required
-    if (end_date === '') {
-        // Display the "End Date is required" message in red
-        $('#response').html('<span style="color: red;">End date is required.</span>');
-
-        // Clear the total_balance value
-        $('#total_balance').empty();
-        return; // Exit the function, preventing further processing
-    }
-
-    // Make an AJAX request to initiate GeneralLedgerView with dynamic dates and selected_account_id
-    $.ajax({
-        // url: '/general_ledger/' + selected_account_id + '/',
-        url: '/general_ledger/6',
-        type: 'GET',
-        data: {
-            // start_date: start_date,
-            // end_date: end_date,
-            // selected_account_id: selected_account_id,
-        },
-        success: function (data) {
-            // Clear existing content
-            $('#response').empty();
-
-            if (Array.isArray(data.general_ledger) && data.general_ledger.length > 0) {
-                // Create a Bootstrap table to display the ledger entries
-                var tableHtml = '<table class="table">';
-                tableHtml += '<thead><tr><th>Date</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody>';
-
-                $.each(data.general_ledger, function (index, item) {
-                    tableHtml += '<tr>';
-                    tableHtml += '<td>' + item.Date + '</td>';
-                    tableHtml += '<td>' + item.Debit + '</td>';
-                    tableHtml += '<td>' + item.Credit + '</td>';
-                    tableHtml += '<td>' + item.Balance + '</td>';
-                    tableHtml += '</tr>';
-                });
-
-                tableHtml += '</tbody></table>';
-                $('#response').html(tableHtml);
-
-                // Display the total_balance value (if available)
-                if (data.total_balance) {
-                    $('#total_balance').text('Total Balance: ' + data.total_balance);
-                } else {
-                    $('#total_balance').empty();
-                }
-            } else {
-                // Handle the case when the response is empty or not an array
-                $('#response').text('No data available.');
-
-                // Clear the total_balance value
-                $('#total_balance').empty();
-            }
-        },
-        error: function (error) {
-            // Handle any errors (if needed)
-            console.error('Error:', error);
-        }
-    });
 });
 
 $('#clearFormButton').click(function () {

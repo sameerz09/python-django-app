@@ -19,17 +19,17 @@ def authenticate_odoo():
 
     except xmlrpc.client.Fault as err:
         return None, None
+
 def get_account_ids(request):
-    url = 'http://127.0.0.1:9069'
+    uid, models = authenticate_odoo()
     db = 'testkmnss'
     username = 'sameerz09@hotmail.com'
     password = 'Test@111'
-    uid, models = authenticate_odoo()  # Define models in this scope
 
     if uid is not None and models is not None:
         try:
-            # Call the 'search_read' method on the 'account.account' model to retrieve account IDs
-            account_ids = models.execute_kw(
+            # Call the custom 'get_all_accounts' method on the 'account.account' model
+            account_data = models.execute_kw(
                 db,
                 uid,
                 password,
@@ -38,18 +38,18 @@ def get_account_ids(request):
                 [],
             )
 
-            if isinstance(account_ids, list):
-                # Process each account ID
-                for account_id in account_ids:
-                    # Do something with the account ID, e.g., print it
-                    print("Account ID:", account_id)
+            if isinstance(account_data, list):
+                # Process each account object
+                for account in account_data:
+                    # Do something with the account data
+                    print("Account ID:", account['id'], "Account Name:", account['name'])
 
-                # Return the account IDs as a JSON response
-                return JsonResponse({'account_ids': account_ids})
+                # Return the account data as a JSON response
+                return JsonResponse({'account_data': account_data})
             else:
                 return JsonResponse({"error": "Invalid response from Odoo."}, status=500)
 
         except Exception as e:
             return JsonResponse({"error": f"An error occurred: {e}"}, status=500)
     else:
-        return JsonResponse({"error": "Authentication failed."}, status=500)    
+        return JsonResponse({"error": "Authentication failed."}, status=500)

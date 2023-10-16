@@ -15,7 +15,7 @@ def fetch_balance(account_id, url, db, username, password, start_date, end_date)
         account_name = account_data[0]['name']
 
         # Call the 'getbalance' method to fetch the general ledger data
-        balances = odoo_api(url, db, username, password, 'account.account', 'general_ledger', [start_date, end_date, account_id])
+        balances = odoo_api(url, db, username, password, 'account.account', 'ledger_debit_credit', [start_date, end_date, account_id])
 
         ledger_entries = []
 

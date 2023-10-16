@@ -6,15 +6,15 @@ from datetime import datetime
 class GetBalanceSumView(APIView):
     def get(self, request):
         # Replace these with your Odoo server details
-        odoo_url = 'http://13.49.59.166:8069'
-        odoo_db = 'KMNSS'
-        odoo_username = 'sugam.pandey@gmail.com'
-        odoo_password = 'sugam@kmnss!23#'
+        odoo_url = 'http://127.0.0.1:9069'
+        odoo_db = 'testkmnss'
+        odoo_username = 'sameerz09@hotmail.com'
+        odoo_password = 'Test@111'
 
         # Replace these with your target date range
-        start_date = request.GET.get('start_date', '2023-01-01')
-        end_date = request.GET.get('end_date', '2023-10-01')
-        selected_account_id = request.GET.get('selected_account_id', '7')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        selected_account_id = request.GET.get('selected_account_id')
 
         # Check if "end_date" is not provided or in an incorrect format
 #        if not end_date:
