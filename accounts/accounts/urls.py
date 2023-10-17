@@ -8,7 +8,7 @@ from . import login
 from .accounts_id_views import get_account_ids
 from django.contrib.auth import views as auth_views
 # from .general_ledger_view import GeneralLedgerView
-from .fetch_general_ledger_data import GetBalanceSumView
+from .fetch_general_ledger_data import GetLedgerSumView
 from django.contrib.auth.decorators import login_required
 
 # urlpatterns = [
@@ -38,6 +38,7 @@ urlpatterns = [
     path('test/', login_required(BalanceSumTemplateView.as_view()), name='balance_sum_template'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/login/'), name='logout'),
     path('api/get-balance-sum/', login_required(GetBalanceSumView.as_view()), name='get_balance_sum'),
-    path('general_ledger/<int:account_number>/', login_required(GetBalanceSumView.as_view()), name='general_ledger'),
+    path('api/get-ledger-sum/', login_required(GetLedgerSumView.as_view()), name='get_balance_sum'),
+    path('general_ledger/<int:account_number>/', login_required(GetLedgerSumView.as_view()), name='general_ledger'),
     # path('ledger/', GeneralView.as_view(), name='ledger'),
 ]

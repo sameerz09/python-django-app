@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from datetime import datetime
 
-class GetBalanceSumView(APIView):
+class GetLedgerSumView(APIView):
     def get(self, request):
         # Replace these with your Odoo server details
         odoo_url = 'http://127.0.0.1:9069'
@@ -14,7 +14,7 @@ class GetBalanceSumView(APIView):
         # Replace these with your target date range
         start_date = request.GET.get('start_date', '2023-01-01')
         end_date = request.GET.get('end_date', '2023-10-01')
-        selected_account_id = request.GET.get('selected_account_id', '7')
+      #  selected_account_id = request.GET.get('selected_account_id', '7')
 
         # Check if "end_date" is not provided or in an incorrect format
 #        if not end_date:
@@ -34,8 +34,8 @@ class GetBalanceSumView(APIView):
                 uid,
                 odoo_password,
                 'account.account',
-                'ledger_debit_credit',
-                [start_date, end_date, selected_account_id],
+                'general_ledger_report',
+                [start_date, end_date],
                 {}
             )
 
