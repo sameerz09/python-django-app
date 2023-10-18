@@ -1,7 +1,6 @@
 import xmlrpc.client
 from django.http import JsonResponse
 from rest_framework.views import APIView
-from datetime import datetime
 
 class GetLedgerSumView(APIView):
     def get(self, request):
@@ -14,28 +13,26 @@ class GetLedgerSumView(APIView):
         # Replace these with your target date range
         start_date = request.GET.get('start_date', '2023-01-01')
         end_date = request.GET.get('end_date', '2023-10-01')
-      #  selected_account_id = request.GET.get('selected_account_id', '7')
-
-        # Check if "end_date" is not provided or in an incorrect format
-#        if not end_date:
- #           return JsonResponse({"error": "End date is required."}, status=400)
+        selected_account_id = request.GET.get('selected_account_id', '7')
 
         try:
-            # Create XML-RPC server proxies for common and models
+            # Create an XML-RPC server proxy for common
             common = xmlrpc.client.ServerProxy(f'{odoo_url}/xmlrpc/2/common')
-            models = xmlrpc.client.ServerProxy(f'{odoo_url}/xmlrpc/2/object')
 
             # Authenticate and get user ID
             uid = common.authenticate(odoo_db, odoo_username, odoo_password, {})
 
-            # Call the getbalance method with date range parameters and the selected account ID
+            # Create an XML-RPC server proxy for models
+            models = xmlrpc.client.ServerProxy(f'{odoo_url}/xmlrpc/2/object')
+
+            # Call the general_ledger_report method with date range parameters and the selected account ID
             balances = models.execute_kw(
                 odoo_db,
                 uid,
                 odoo_password,
-                'account.account',
+                'account.account',  # Replace with your actual module name
                 'general_ledger_report',
-                [start_date, end_date],
+                [int(selected_account_id), start_date, end_date],
                 {}
             )
 
@@ -46,15 +43,18 @@ class GetLedgerSumView(APIView):
             if not balances:
                 return JsonResponse({"message": "No data available", "response": []})
 
-            for balance in balances:
-                response_data.append({
-                    "root_id": balance['root_id'],
-                    "account_name": balance['account_name'],    
+            for balance in balances['ledger_data']:
+                response_entry = {
                     "date": balance['date'],
                     "debit": balance['debit'],
                     "credit": balance['credit'],
-                    "balance": balance['balance']
-                })
+                    "balance": balance['balance'],
+                }
+                if 'name' in balance:
+                    response_entry["name"] = balance['name']
+                if 'account_root_id' in balance:
+                    response_entry["account_root_id"] = balance['account_root_id']
+                response_data.append(response_entry)
 
                 # Add the balance to the total balance
                 total_balance += balance['balance']
@@ -69,4 +69,3 @@ class GetLedgerSumView(APIView):
         # Handle exceptions if authentication or API calls fail
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
-

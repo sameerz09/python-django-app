@@ -10,7 +10,6 @@ class GetBalanceSumView(APIView):
         odoo_db = 'testkmnss'
         odoo_username = 'sameerz09@hotmail.com'
         odoo_password = 'Test@111'
-
         # Replace these with your target date range
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
