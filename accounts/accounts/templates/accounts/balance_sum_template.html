@@ -74,11 +74,11 @@
                     <!-- Shared content for both pages -->
                     <h1>General Ledger</h1>    
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="start_date_container">
                     <label for="start_date">Start Date:</label>
                     <input type="date" class="form-control" id="start_date">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="end_date_container">
                     <label for="end_date">End Date:</label>
                     <input type="date" class="form-control" id="end_date">
                 </div>
@@ -149,6 +149,7 @@
             } else {
                 $('#page-content').show();
                 $('#account_select_container').show();
+                $('#start_date_container').hide();
                 $('#getLedgerButton').hide();
                 $('#getBalanceSumButton').show();
             }
@@ -172,79 +173,75 @@
         console.error('Error:', error);
     }
 });
-$('#getBalanceSumButton').click(function () {
-            // Retrieve start_date, end_date, and selected_account_id values from the input fields
-            var start_date = $('#start_date').val();
-            var end_date = $('#end_date').val();
-            var selected_account_id = $('#selected_account_id').val();
+$('#getBalanceSumButton').click(function () {// Retrieve start_date, end_date, and selected_account_id values from the input fields
+    var end_date = $('#end_date').val();
+    var selected_account_id = $('#selected_account_id').val();
 
-            if (!isNaN(selected_account_id) && parseInt(selected_account_id) === parseFloat(selected_account_id)) {
-                // It's a valid integer, you can proceed with further processing
-            } else {
-                console.error('Invalid selected_account_id:', selected_account_id);
-                // Handle the error condition or provide a user-friendly message
-            }
-
-            // Check if "end_date" is required
-            if (end_date === '') {
-                // Display the "End Date is required" message in red
-                $('#response').html('<span style="color: red;">End date is required.</span>');
-
-                // Clear the total_balance value
-                $('#total_balance').empty();
-                return; // Exit the function, preventing further processing
-            }
-            
     
-            if (selected_account_id === '') {
-                  // Display the "End Date is required" message in red
-                $('#response').html('<span style="color: red;">Selected account is required.</span>');
+
+    // Check if "end_date" is required
+    if (end_date === '') {
+        // Display the "End Date is required" message in red
+        $('#response').html('<span style="color: red;">End date is required.</span>');
+
+        // Clear the total_balance value
+        $('#total_balance').empty();
+        return; // Exit the function, preventing further processing
+    }
+
+    
+    if (selected_account_id === '') {
+        // Display the "End Date is required" message in red
+        $('#response').html('<span style="color: red;">Selected account is required.</span>');
+
+        // Clear the total_balance value
+        $('#total_balance').empty();
+        return; // Exit the function, preventing further processing
+    }
+
+
+
+    // Make an AJAX request to initiate GetBalanceSumView with dynamic dates and selected_account_id
+
+  
+    $.ajax({
+        url: '/api/get-balance-sum/',  // URL for the GetBalanceSumView
+        type: 'GET',
+        data: {
+            // start_date: start_date,
+            end_date: end_date,
+            selected_account_id: selected_account_id  // Include selected_account_id in the request
+        },
+        success: function (data) {
+            // Clear existing content
+            $('#response').empty();
+            
+
+            if (data.response.length > 0) {
+                var accountName = data.response[0].name;
+                // Create a Bootstrap table to display the response data
+                var tableHtml = '<table class="table">';
+                tableHtml += '<thead><tr><th>Balance</th><th>Date</th></tr></thead><tbody>';
+                    $.each(data.response, function (index, item) {
+                          tableHtml += '<tr>';
+                          tableHtml += '<td>' + item.balance + '</td>';
+                          tableHtml += '<td>' + item.date + '</td>';
+                          tableHtml += '</tr>';
+        });
+                tableHtml += '</tbody></table>';
+                $('#response').html(tableHtml);
+
+                // Display the total_balance value
+                // $('#total_balance').text('Total Balance: ' + data.total_balance.toFixed(2));
+            } else {
+                // Handle the case when the response is empty
+                $('#response').text('No data available.');
 
                 // Clear the total_balance value
-                $('#total_balance').empty();
-                return; // Exit the function, preventing further processing
+                // $('#total_balance').empty();
             }
-
-
-
-            // Make an AJAX request to initiate GetBalanceSumView with dynamic dates and selected_account_id
-            $.ajax({
-                url: '/api/get-balance-sum/',  // URL for the GetBalanceSumView
-                type: 'GET',
-                data: {
-                    start_date: start_date,
-                    end_date: end_date,
-                    selected_account_id: selected_account_id  // Include selected_account_id in the request
-                },
-                success: function (data) {
-                    // Clear existing content
-                    $('#response').empty();
-
-                    if (data.response.length > 0) {
-                        // Create a Bootstrap table to display the response data
-                        var tableHtml = '<table class="table">';
-                        tableHtml += '<thead><tr><th>Root ID</th><th>Account Name</th><th>Balance</th><th>Movement Date</th></tr></thead><tbody>';
-                        $.each(data.response, function (index, item) {
-                            tableHtml += '<tr>';
-                            tableHtml += '<td>' + item.root_id + '</td>';
-                            tableHtml += '<td>' + item.account_name + '</td>';
-                            tableHtml += '<td>' + item.balance + '</td>';
-                            tableHtml += '<td>' + item.date + '</td>';
-                            tableHtml += '</tr>';
-                        });
-                        tableHtml += '</tbody></table>';
-                        $('#response').html(tableHtml);
-
-                        // Display the total_balance value
-                        $('#total_balance').text('Total Balance: ' + data.total_balance);
-                    } else {
-                        // Handle the case when the response is empty
-                        $('#response').text('No data available.');
-
-                        // Clear the total_balance value
-                        $('#total_balance').empty();
-                    }
-                },
+       
+        },
                 error: function (error) {
                     // Handle any errors (if needed)
                     console.error('Error:', error);
@@ -306,21 +303,23 @@ $('#getLedgerButton').click(function () {// Retrieve start_date, end_date, and s
             if (data.response.length > 0) {
                 // Create a Bootstrap table to display the response data
                 var tableHtml = '<table class="table">';
-                tableHtml += '<thead><tr><th>Root ID</th><th>Debit</th><th>Credit</th><th>Balance</th><th>Movement Date</th></tr></thead><tbody>';
+                tableHtml += '<thead><tr><th>Root ID</th><th>Debit</th><th>Credit</th><th>Date</th><th>Analytic Description</th><th>Analytic Ammount</th></tr></thead><tbody>';
                 $.each(data.response, function (index, item) {
                     tableHtml += '<tr>';
                     tableHtml += '<td>' + item.account_root_id + '</td>';
                     tableHtml += '<td>' + item.debit + '</td>';
                     tableHtml += '<td>' + item.credit + '</td>';
-                    tableHtml += '<td>' + item.balance + '</td>';
                     tableHtml += '<td>' + item.date + '</td>';
+                    tableHtml += '<td>' + item.analytic_name + '</td>';
+                    tableHtml += '<td>' + item.analytic_amount + '</td>';
+                    // tableHtml += '<td>' + item.anlytic_move_line_id + '</td>';
                     tableHtml += '</tr>';
                 });
                 tableHtml += '</tbody></table>';
                 $('#response').html(tableHtml);
 
                 // Display the total_balance value
-                $('#total_balance').text('Total Balance: ' + data.total_balance.toFixed(2));
+                // $('#total_balance').text('Total Balance: ' + data.total_balance.toFixed(2));
             } else {
                 // Handle the case when the response is empty
                 $('#response').text('No data available.');

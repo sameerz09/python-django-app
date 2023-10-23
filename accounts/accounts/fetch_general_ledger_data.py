@@ -5,10 +5,10 @@ from rest_framework.views import APIView
 class GetLedgerSumView(APIView):
     def get(self, request):
         # Replace these with your Odoo server details
-        odoo_url = 'http://127.0.0.1:9069'
-        odoo_db = 'testkmnss'
-        odoo_username = 'sameerz09@hotmail.com'
-        odoo_password = 'Test@111'
+        odoo_url = 'http://13.49.59.166:8069'
+        odoo_db = 'KMNSS'
+        odoo_username = 'sugam.pandey@gmail.com'
+        odoo_password = 'sugam@kmnss!23#'
 
         # Replace these with your target date range
         start_date = request.GET.get('start_date', '2023-01-01')
@@ -43,21 +43,34 @@ class GetLedgerSumView(APIView):
             if not balances:
                 return JsonResponse({"message": "No data available", "response": []})
 
+            # Get the name from account_info
+            name = ''
+            anlytic_name = ''
+            anlytic_id = ''
+            
+            if 'account_info' in balances:
+                name = balances['account_info']['name']
+
+            # if 'analytic_account_info' in balances:
+            #     anlytic_info = balances['analytic_account_info']
+            #     anlytic_name = anlytic_info['name']
+            #     anlytic_id = anlytic_info['id']
+
             for balance in balances['ledger_data']:
                 response_entry = {
-                    "date": balance['date'],
+                    "account_root_id": balance['account_root_id'],
+
                     "debit": balance['debit'],
                     "credit": balance['credit'],
-                    "balance": balance['balance'],
+                    "date": balance['date'],
+                    "analytic_amount": balance['analytic_amount'],
+                    "analytic_name": balance['analytic_name'],
                 }
-                if 'name' in balance:
-                    response_entry["name"] = balance['name']
-                if 'account_root_id' in balance:
-                    response_entry["account_root_id"] = balance['account_root_id']
+
                 response_data.append(response_entry)
 
                 # Add the balance to the total balance
-                total_balance += balance['balance']
+                total_balance += balance.get('balance', 0)
 
             # Return the response data as JSON along with the total balance
             return JsonResponse({

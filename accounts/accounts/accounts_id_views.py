@@ -3,10 +3,10 @@ from django.http import JsonResponse
 
 def authenticate_odoo():
     # Replace these with your Odoo server details
-    url = 'http://127.0.0.1:9069'
-    db = 'testkmnss'
-    username = 'sameerz09@hotmail.com'
-    password = 'Test@111'
+    url = 'http://13.49.59.166:8069'
+    db = 'KMNSS'
+    username = 'sugam.pandey@gmail.com'
+    password = 'sugam@kmnss!23#'
 
     # Create XML-RPC server proxies for common and models with allow_none=True
     common = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common', allow_none=True)
@@ -22,9 +22,9 @@ def authenticate_odoo():
 
 def get_account_ids(request):
     uid, models = authenticate_odoo()
-    db = 'testkmnss'
-    username = 'sameerz09@hotmail.com'
-    password = 'Test@111'
+    db = 'KMNSS'
+    username = 'sugam.pandey@gmail.com'
+    password = 'sugam@kmnss!23#'
 
     if uid is not None and models is not None:
         try:
