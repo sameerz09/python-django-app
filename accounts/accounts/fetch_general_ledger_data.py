@@ -63,8 +63,10 @@ class GetLedgerSumView(APIView):
                     "debit": balance['debit'],
                     "credit": balance['credit'],
                     "date": balance['date'],
-                    "analytic_amount": balance['analytic_amount'],
-                    "analytic_name": balance['analytic_name'],
+                    "analytic_account_amount": balance['analytic_account_amount'],
+                    "analytic_account_name": balance['analytic_account_name'],
+                    "partner_name": balance['partner_name'],
+                    "partner_type": balance['partner_type'],
                 }
 
                 response_data.append(response_entry)

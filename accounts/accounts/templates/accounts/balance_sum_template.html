@@ -303,15 +303,18 @@ $('#getLedgerButton').click(function () {// Retrieve start_date, end_date, and s
             if (data.response.length > 0) {
                 // Create a Bootstrap table to display the response data
                 var tableHtml = '<table class="table">';
-                tableHtml += '<thead><tr><th>Root ID</th><th>Debit</th><th>Credit</th><th>Date</th><th>Analytic Description</th><th>Analytic Ammount</th></tr></thead><tbody>';
+                tableHtml += '<thead><tr><th>Root ID</th><th>Debit</th><th>Credit</th><th>Date</th><th>Analytic Account Name</th><th>Analytic Item Amount</th><th>Partner Name</th><th>Partner Type</th></tr></thead><tbody>';
                 $.each(data.response, function (index, item) {
                     tableHtml += '<tr>';
                     tableHtml += '<td>' + item.account_root_id + '</td>';
                     tableHtml += '<td>' + item.debit + '</td>';
                     tableHtml += '<td>' + item.credit + '</td>';
                     tableHtml += '<td>' + item.date + '</td>';
-                    tableHtml += '<td>' + item.analytic_name + '</td>';
-                    tableHtml += '<td>' + item.analytic_amount + '</td>';
+                    tableHtml += '<td>' + item.analytic_account_name + '</td>';
+                    tableHtml += '<td>' + item.analytic_account_amount + '</td>';
+                    tableHtml += '<td>' + item.partner_name + '</td>';
+                    tableHtml += '<td>' + item.partner_type + '</td>';
+
                     // tableHtml += '<td>' + item.anlytic_move_line_id + '</td>';
                     tableHtml += '</tr>';
                 });
