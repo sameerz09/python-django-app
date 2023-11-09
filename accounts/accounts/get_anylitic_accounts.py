@@ -20,7 +20,7 @@ def authenticate_odoo():
     except xmlrpc.client.Fault as err:
         return None, None
 
-def get_account_ids(request):
+def get_analytic_account_ids(request):
     uid, models = authenticate_odoo()
     db = 'testkmnss'
     username = 'sameerz09@hotmail.com'
@@ -34,7 +34,7 @@ def get_account_ids(request):
                 uid,
                 password,
                 'account.account',  # Replace with the actual module name
-                'get_all_accounts',
+                'get_analytic_accounts',
                 [],
             )
 

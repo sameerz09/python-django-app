@@ -21,6 +21,20 @@
         #sidebar .nav-link.active {
             background-color: #007bff; /* Set the active link background color */
         }
+    .delete-bill-btn {
+        background-color: #e74c3c; /* Red background color */
+        color: #fff; /* White text color */
+        padding: 5px 10px; /* Padding around the text */
+        border: none; /* No border */
+        cursor: pointer; /* Show a pointer cursor on hover */
+        border-radius: 5px; /* Rounded corners */
+        transition: background-color 0.3s; /* Smooth color transition on hover */
+}
+
+/* Style the "Delete" button on hover */
+    .delete-bill-btn:hover {
+        background-color: #c0392b; /* Darker red on hover */
+}
     </style>
     
 
@@ -43,29 +57,36 @@
                                 <a class="nav-link" href="?page=general-ledger">
                                     <i class="fas fa-file-invoice-dollar"></i> General Ledger
                                 </a>
-                                <a class="nav-link" href="?page=income-statement">
-                                    <i class="fas fa-file-alt"></i> Income Statement
+                                <!-- Add a class "default-page" to the Bill Query link
+                                <a class="nav-link default-page" href="?page=bill-query">
+                                    <i class="fas fa-file-invoice"></i> Bill Query
+                                </a> -->
+                            </div>
+                        </li>
+                        <li class="nav-item" data-page="bills">
+                            <a class="nav-link" href="#" data-toggle="collapse" data-target="#bills-menu">
+                                <i class="fas fa-file-invoice"></i> Bills
+                            </a>
+                            <div id="bills-menu" class="submenu">
+                                <a class="nav-link" href="?page=add-bills">
+                                    <i class="fas fa-plus"></i> Add Bills
                                 </a>
-                                <a class="nav-link" href="?page=balance-sheet">
-                                    <i class="fas fa-balance-scale"></i> Balance Sheet
+                                <a class="nav-link" href="?page=get-bills">
+                                    <i class="fas fa-list"></i> Get Bills
                                 </a>
-                                <a class="nav-link" href="?page=cash-flow">
-                                    <i class="fas fa-coins"></i> Cash Flow Statement
-                                </a>
-                           
-                                
                             </div>
                         </li>
                     </ul>
                 </div>
             </nav>
             
+            
 
 
 
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div id="page-content">
+                <div id="page-content" style="display: none;">
                     <!-- Shared content for both pages -->
                     <h1>The Total Balance</h1>
                     
@@ -74,15 +95,65 @@
                     <!-- Shared content for both pages -->
                     <h1>General Ledger</h1>    
                 </div>
-                <div class="form-group" id="start_date_container">
+                <div id="page-content-add-bills" style="display: none;">
+                    <!-- Shared content for both pages -->
+                    <h1>Create Bills</h1>    
+                </div>
+                <div id="page-content-get-bills" style="display: none;">
+                    <!-- Shared content for both pages -->
+                    <h1>Get Bills</h1> 
+                </div>
+                <div class="form-group" id="start_date_container" style="display: none;">
                     <label for="start_date">Start Date:</label>
                     <input type="date" class="form-control" id="start_date">
                 </div>
-                <div class="form-group" id="end_date_container">
+                <div class="form-group" id="end_date_container" style="display: none;">
                     <label for="end_date">End Date:</label>
                     <input type="date" class="form-control" id="end_date">
                 </div>
-                <div class="form-group" id="account_select_container">
+                <div class="form-group" id="bill_date_container" style="display: none;">
+                    <label for="bill_date">Bill Date:</label>
+                    <input type="date" class="form-control" id="bill_date">
+                </div>
+                <div class="form-group" id="bill_date_due_container" style="display: none;">
+                    <label for="end_date">Bill Date Due:</label>
+                    <input type="date" class="form-control" id="bill_date_due">
+                </div>
+                <div class="form-group" id="bill_name_container" style="display: none;">
+                    <label for="bill_name">Name:</label>
+                    <input type="text" class="form-control" id="bill_name">
+                </div>
+                
+                <!-- <div class="form-group" id="bill_date_container" style="display: none;">
+                    <label for="bill_date">Bill Date:</label>
+                    <input type="date" class="form-control" id="bill_date">
+                </div> -->
+                <div class="form-group" id="partner_id_container" style="display: none;">
+                    <label for="bill_parter_id">Partner ID:</label>
+                    <input type="text" class="form-control" id="partner_id">
+                </div>
+                <div class="form-group" id="total_bill_amount_container" style="display: none;">
+                    <label for="move_amount">Total Amount:</label>
+                    <input type="text" class="form-control" id="move_amount">
+                </div>
+                <div class="form-group" id="move_type_container" style="display: none;">
+                    <label for="move_type">Type:</label>
+                    <input type="text" class="form-control" id="move_type" value="in_invoice">
+                </div>
+                <div class="form-group" id="reference_container" style="display: none;">
+                    <label for="reference">Reference:</label>
+                    <input type="text" class="form-control" id="reference">
+                </div>
+                <div class="form-group" id="narration_container" style="display: none;">
+                    <label for="narration">Narration:</label>
+                    <input type="text" class="form-control" id="narration">
+                </div>
+                
+                
+                
+                
+
+                <div class="form-group" id="account_select_container" style="display: none;">
                     <label for="selected_account_id">Select Account:</label>
                     <select class="form-control" id="selected_account_id" name="selected_account_id">
                         <option value="">-- Select Account --</option>
@@ -91,13 +162,38 @@
                         {% endfor %}
                     </select>
                 </div>
+
+                <div class="form-group" id="selected_partner_id_container" style="display: none;">
+                    <label for="selected_partner_id">Select Partner:</label>
+                    <select class="form-control" id="selected_partner_id" name="selected_partner_id">
+                        <option value="">-- Select Partner --</option>
+                        {% for partner in partner_data %}
+                            <option value="{{ partner.id }}">{{ partner.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" id="selected_analytic_container" style="display: none;">
+                    <label for="selected_analytic_id">Select Analytic:</label>
+                    <select class="form-control" id="selected_analytic_id" name="selected_analytic_id">
+                        <option value="">-- Select Analytic Account --</option>
+                        {% for account in account_data %}
+                            <option value="{{ account.id }}">{{ account.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                         
                 
-                 <div class="button-group">                        
+                 <div class="button-group">
+                                                
                     
-                         <button id="getBalanceSumButton" class="btn btn-primary">Get Balance Sum</button>
+                         <button id="getBalanceSumButton" style="display: none;" class="btn btn-primary">Get Balance Sum</button>
 
-                         <button id="getLedgerButton" class="btn btn-primary">Get Ledger Rebort</button>
+                         <button id="getLedgerButton" style="display: none;" class="btn btn-primary">Get Ledger Rebort</button>
+
+                         <button id="CreateBillButton"  style="display: none;" class="btn btn-primary">Create Bill</button>
+                         
+                         <button id="GetBillButton"  style="display: none;" class="btn btn-primary">Get Bill</button>
+                         <button id="DeleteBillButton"  style="display: none;" class="btn btn-danger ml-2">Delete Bills</button>
      
                          <!-- <button type="button" id="clearFormButton" class="btn btn-secondary ml-2">Clear</button> -->
                          <button type="button" id="clearFormButton" class="btn btn-secondary ml-2">Clear</button>
@@ -105,7 +201,7 @@
                          {% if user.is_authenticated %}
                          <form method="post" action="{% url 'logout' %}" class="d-inline">
                                {% csrf_token %}
-                             <button type="submit" class="btn btn-danger ml-2">Logout</button>
+                               <button type="submit" class="btn btn-warning ml-2">Logout</button>
                          </form>
                               {% endif %}
 
@@ -139,22 +235,75 @@
             
             // Load the specific page's content into the container
             if (pageParam === 'general-ledger') {
-                $('#page-content').hide();
+                $('#page-content-general-ledger').show();
                 $('#account_select_container').show();
+                $('#start_date_container').show();
+                $('#end_date_container').show();
                 $('#getLedgerButton').show();
-                $('#getBalanceSumButton').hide();
-                
-                
-
-            } else {
+            } 
+            else if (pageParam === 'total-balance') {
                 $('#page-content').show();
                 $('#account_select_container').show();
-                $('#start_date_container').hide();
-                $('#getLedgerButton').hide();
+                $('#end_date_container').show();
                 $('#getBalanceSumButton').show();
-            }
+            } 
+            else if (pageParam === 'add-bills') {
+                $('#bill_name_container').hide();
+                $('#bill_date_container').show();
+                $('#bill_date_due_container').show();
+                $('#partner_id_container').hide();
+                $('#move_type_container').hide();
+                $('#total_bill_amount_container').show();
+                $('#CreateBillButton').show();
+                $('#selected_partner_id_container').show();
+                $('#account_select_container').show();
+                $('#selected_analytic_container').show();
+                $('#reference_container').show();
+                $('#narration_container').show();
+                
 
-            $.ajax({
+                
+
+                
+                
+                // $('#partner_partner_container').show();
+
+                // partner_select_container
+                
+            }
+            else if (pageParam === 'get-bills') {
+                $('#start_date_container').show();
+                $('#end_date_container').show();
+                $('#selected_partner_id_container').hide();
+                $('#account_select_container').hide();
+                $('#selected_analytic_container').hide();
+                $('#GetBillButton').show();
+                $('#DeleteBillButton').show();
+
+             
+                
+            } 
+            else {
+                $('#bill_date_container').show();
+                $('#total_bill_amount_container').show();
+                $('#CreateBillButton').show();
+                $('#selected_partner_id_container').show();
+                $('#account_select_container').show();
+                $('#selected_analytic_container').show();
+
+                        
+            }    
+            
+                
+
+                
+  
+           
+
+                
+            
+
+    $.ajax({
     url: '/api/get-account-ids/',  // URL for the get_account_ids view
     type: 'GET',
     success: function (data) {
@@ -167,6 +316,45 @@
         // Add each account as an option in the select field
         $.each(data.account_data, function (index, account) {
             $('#selected_account_id').append('<option value="' + account.id + '">' + account.name + '</option>');
+        });
+    },
+    error: function (error) {
+        console.error('Error:', error);
+    }
+});
+$.ajax({
+    url: '/api/get-anylitic-ids/',  // URL for the get_account_ids view
+    type: 'GET',
+    success: function (data) {
+        // Clear existing options
+        $('#selected_analytic_id').empty();
+
+        // Add an empty default option
+        $('#selected_analytic_id').append('<option value="">-- Select Account --</option>');
+
+        // Add each account as an option in the select field
+        $.each(data.account_data, function (index, account) {
+            $('#selected_analytic_id').append('<option value="' + account.id + '">' + account.name + '</option>');
+        });
+    },
+    error: function (error) {
+        console.error('Error:', error);
+    }
+});
+$.ajax({
+    url: '/api/get-partner-ids/',  // URL for the get_account_ids view
+    type: 'GET',
+    success: function (data) {
+        // Clear existing options
+        $('#selected_partner_id').empty();
+
+        // Add an empty default option
+        $('#selected_partner_id').append('<option value="">-- Select Partner --</option>');
+
+        // Add each partner as an option in the select field
+        $.each(data.partner_data, function (index, partner) {
+            var option = $('<option>').attr('value', partner.id).text(partner.name);
+            $('#selected_partner_id').append(option);
         });
     },
     error: function (error) {
@@ -312,7 +500,7 @@ $('#getLedgerButton').click(function () {// Retrieve start_date, end_date, and s
                     tableHtml += '<td>' + item.date + '</td>';
                     tableHtml += '<td>' + item.analytic_account_name + '</td>';
                     tableHtml += '<td>' + item.analytic_account_amount + '</td>';
-                    tableHtml += '<td>' + item.partner_name + '</td>';
+                    tableHtml += '<td>' + item.partner_id + '</td>';
                     tableHtml += '<td>' + item.partner_type + '</td>';
 
                     // tableHtml += '<td>' + item.anlytic_move_line_id + '</td>';
@@ -340,6 +528,7 @@ $('#getLedgerButton').click(function () {// Retrieve start_date, end_date, and s
 
 });
 
+
 $('#clearFormButton').click(function () {
         // Reset the date fields and the dropdown
         $('#start_date, #end_date, #selected_account_id').val('');
@@ -347,8 +536,420 @@ $('#clearFormButton').click(function () {
         // Clear any response and total balance messages
         $('#response, #total_balance').empty();
     });
+// $('#CreateBillButton').click(function() {
+//     // Retrieve data from the form
+//     var bill_date = $('#bill_date').val();
+//     var partnerId = $('#partner_id').val();
+//     var moveAmount = $('#move_amount').val();
+//     var selected_partner_id = $('#selected_partner_id').val();
+//     var moveType = 'in_invoice';
+//     var selected_account_id = $('#selected_account_id').val();
+//     var selected_analytic_id = $('#selected_analytic_id').val();
+
+//     // Check if the required fields are filled
+//     if (!bill_date || !selected_partner_id || !moveAmount) {
+//         alert('Please fill in all required fields.');
+//     } else {
+//         // Create an object with the form data
+//         var formData = {
+//             bill_date: bill_date,
+//             partner_id: selected_partner_id,
+//             move_type: moveType,
+//             move_amount: moveAmount,
+//             selected_account_id: selected_account_id,
+//             selected_analytic_id: selected_analytic_id
+//         };
+
+//         // Use an AJAX request to send the data to the Django view
+//         $.ajax({
+//             // Update the URL to match your Django view's URL
+//             // url: '/create_bills/',
+//             url: '/create_bills/?selected_partner_id=' + selected_partner_id + '&move_amount=' + moveAmount + '&selected_account_id=' + selected_account_id + '&bill_date=' + bill_date + '&selected_analytic_id=' + selected_analytic_id,
+//             method: 'POST',
+//             data: formData,
+//             headers: {
+//                 "X-CSRFToken": getCookie("csrftoken")
+//             },
+//             success: function(request) {
+//                 // Display the response from the Django view
+//                 $('#result').html(request.message);
+
+//                 // Check if 'created_bills' is defined and is an array
+//                 if (Array.isArray(request.created_bills)) {
+//                     var createdBills = request.created_bills;
+
+//                     // Reference to the table
+//                     var table = $('#billTable');
+
+//                     // Iterate through the new bills and add rows to the table
+//                     createdBills.forEach(function(bill) {
+//                         var row = '<tr>';
+//                         row += '<td>' + bill[0] + '</td>'; // Bill ID
+//                         row += '<td>' + bill[1] + '</td>'; // Bill Number
+//                         row += '<td>' + bill[3] + '</td>'; // Bill Date
+//                         row += '<td>' + bill[2] + '</td>'; // Bill Amount
+//                         row += '<td>State</td>'; // You can set the 'State' value or retrieve it from your data
+//                         row += '</tr>';
+//                         table.append(row);
+//                     });
+//                 }
+//             },
+//             error: function(xhr, status, error) {
+//                 console.log('Error:', error);
+//             }
+//         });
+//     }
+// });
+$('#CreateBillButton').click(function() {
+    // Retrieve data from the form
+    var bill_date = $('#bill_date').val();
+    var bill_date_due = $('#bill_date_due').val();
+    var reference = $('#reference').val();
+    var narration = $('#narration').val();
+    var partnerId = $('#partner_id').val();
+    var moveAmount = $('#move_amount').val();
+    var selected_partner_id = $('#selected_partner_id').val();
+    var moveType = 'in_invoice';
+    var selected_account_id = $('#selected_account_id').val();
+    var selected_analytic_id = $('#selected_analytic_id').val();
+
+    // Check if the required fields are filled
+    if (!bill_date || !selected_partner_id || !moveAmount) {
+        alert('Please fill in all required fields.');
+    } else {
+        // Create an object with the form data
+        var formData = {
+            bill_date: bill_date,
+            bill_date_due: bill_date_due,
+            reference: reference,
+            narration: narration,
+            partner_id: selected_partner_id,
+            move_type: moveType,
+            move_amount: moveAmount,
+            selected_account_id: selected_account_id,
+            selected_analytic_id: selected_analytic_id
+        };
+
+        // Use an AJAX request to send the data to the Django view
+        $.ajax({
+            // Update the URL to match your Django view's URL
+            // url: '/create_bills/',
+            url: '/create_bills/?selected_partner_id=' + selected_partner_id + '&move_amount=' + moveAmount + '&selected_account_id=' + selected_account_id + '&bill_date=' + bill_date + '&bill_date_due=' + bill_date_due + '&reference=' + reference + '&narration=' + narration + '&selected_analytic_id=' + selected_analytic_id,
+            method: 'POST',
+            data: formData,
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            // Assuming this code is inside your AJAX success callback
+                success: function(response) {
+                    // Clear existing content
+                    $('#response').empty();
+
+                    if (typeof response === 'string') {
+                        // Display the success message in an alert
+                        alert(response);
+                    } else {
+                        alert('No bill information found.');
+                    }
+                },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+            }
+        });
+    }
+});
+
+// Function to create a silent notification
+function createSilentNotification(title, message) {
+    if (Notification.permission === 'granted') {
+        new Notification(title, { body: message, silent: true });
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(function(permission) {
+            if (permission === 'granted') {
+                new Notification(title, { body: message, silent: true });
+            }
+        });
+    }
+}   
+
+
+// $('#DeleteBillButton').click(function () {
+//     // Retrieve start_date and end_date
+//     var start_date = $('#start_date').val();
+//     var end_date = $('#end_date').val();
+//     // var bill_id = $('#bill_id').val();
+
+//     // Check if the required fields are filled
+//     if (!start_date || !end_date) {
+//         alert('Please fill in both start date and end date.');
+//     } else {
+//         // Create an object with the start_date and end_date
+//         var formData = {
+//             start_date: start_date,
+//             end_date: end_date
+//         };
+//     if (selected_partner_id === '') {
+//         // Display the "End Date is required" message in red
+//         $('#response').html('<span style="color: red;">Selected Partner is required.</span>');
+
+//         // Clear the total_balance value
+//         $('#total_balance').empty();
+//         return; // Exit the function, preventing further processing
+//     }
+
+//         // Use an AJAX request to send the data to the Django view for deleting bills
+//         $.ajax({
+//             url: '/delete_bills/', // Replace with the actual URL of your Django view
+//             method: 'POST',
+//             data: formData,
+//             headers: {
+//                 "X-CSRFToken": getCookie("csrftoken") // Include the CSRF token in the headers
+//             },
+//             success: function (data) {
+//                 // Display the response message
+//                 $('#result').html(data.message);
+
+              
+
+//                 // Trigger a click event on the GetBillButton
+//                 $('#GetBillButton').click();
+//             },
+//             error: function (xhr, status, error) {
+//                 console.log('Error:', error);
+//             }
+//         });
+//     }
+// });
+$('#DeleteBillButton').click(function () {
+    // Retrieve start_date, end_date, and bill_id
+    var start_date = $('#start_date').val();
+    var end_date = $('#end_date').val();
+    // var bill_id = $('#bill_id').val(); // Uncomment this line to retrieve bill_id
+
+    // Check if the required fields are filled
+    if (!start_date || !end_date) {
+        alert('Please fill in both start date and end date.');
+    } else {
+        // Create an object with the start_date, end_date, and bill_id
+        var formData = {
+            start_date: start_date,
+            end_date: end_date,
+            // bill_id: bill_id // Include bill_id in the formData
+        };
+
+        // Perform additional validation if needed (e.g., check for selected_partner_id)
+
+        // Use an AJAX request to send the data to the Django view for deleting bills
+        $.ajax({
+            url: '/delete_bills/', // Replace with the actual URL of your Django view
+            method: 'POST',
+            data: formData,
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken") // Include the CSRF token in the headers
+            },
+            success: function (data) {
+                // Display the response message
+                $('#result').html(data.message);
+
+                // Trigger a click event on the GetBillButton
+                $('#GetBillButton').click();
+            },
+            error: function (xhr, status, error) {
+                console.log('Error:', error);
+            }
+        });
+    }
+});
+
+$('#GetBillButton').click(function() {
+    // Retrieve data from the input fields
+    var start_date = $('#start_date').val();
+    var end_date = $('#end_date').val();
+    
+    // Check if the required fields are filled
+    if (!start_date || !end_date) {
+        alert('Please fill in both start date and end date.');
+    } else {
+        // Use an AJAX request to send the data to the Django view
+        $.ajax({
+            url: '/get_bills/',  // Replace with the actual URL of your Django view
+            method: 'GET',  // Change method to GET
+            data: { start_date: start_date, end_date: end_date},
+            // Pass the date parameters as query parameters
+            success: function(response) {
+                // Clear existing content
+                $('#response').empty();
+
+                if ('bill_info' in response) {
+                    var billInfo = response['bill_info'];
+
+                    // Create a Bootstrap table to display the response data
+                    var tableHtml = '<table class="table">';
+                    tableHtml += '<thead><tr><th>Bill Number</th><th>Bill Date</th><th>Supplier ID</th><th>Account ID</th><th>Amount</th><th>State</th><th>Action</th></tr></thead><tbody>';
+
+                    $.each(billInfo, function(index, item) {
+                        tableHtml += '<tr>';
+                        tableHtml += '<td>' + item.bill_number + '</td>';
+                        tableHtml += '<td>' + item.bill_date + '</td>';
+                        tableHtml += '<td>' + item.supplier_id + '</td>';
+                        tableHtml += '<td>' + item.selected_account_id + '</td>';
+                        tableHtml += '<td>' + item.amount + '</td>';
+                        tableHtml += '<td>' + item.state + '</td>';
+                        tableHtml += '<td><button class="delete-bill-btn" data-bill-id="' + item.bill_number + '">Delete</button></td>';
+                        // Add more bill details here as needed
+                        tableHtml += '</tr>';
+
+                        // Log item.bill_number to the console
+                        console.log('item.bill_number:', item.bill_number);
+                    });
+
+                    tableHtml += '</tbody></table>';
+                    $('#response').html(tableHtml);
+
+                    // Handle the "Delete" button clicks within the response table
+                    $('#response').on('click', '.delete-bill-btn', function() {
+                        var row = $(this).closest('tr');
+                        // var billIdToDelete = $(this).data('bill-id'); // Corrected attribute name
+                        var billIdToDelete = parseInt($(this).data('bill-id'));
+
+                        // Use a confirmation dialog to confirm the deletion
+                        var confirmDelete = confirm('Are you sure you want to delete this bill?');
+
+                        if (confirmDelete) {
+                            // Send an AJAX request to delete the bill with the ID billIdToDelete
+                            $.ajax({
+                                url: '/delete_bill/', // Replace with the actual URL of your Django view for deleting a single bill
+                                method: 'POST',
+                                data: { bill_id: billIdToDelete },
+                                headers: {
+                                    "X-CSRFToken": getCookie("csrftoken")
+                                },
+                                success: function(data) {
+                                    // Handle the success response, e.g., remove the row from the table
+                                    row.remove(); // Remove the row from the table
+                                },
+                                error: function(xhr, status, error) {
+                                    console.log('Error:', error);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    alert('No bill information found.');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+            }
+        });
+    }
+});
+
+// $('#GetBillButton').click(function() {
+//     // Retrieve data from the input fields
+//     var start_date = $('#start_date').val();
+//     var end_date = $('#end_date').val();
+    
+//     // Check if the required fields are filled
+//     if (!start_date || !end_date) {
+//         alert('Please fill in both start date and end date.');
+//     } else {
+//         // Use an AJAX request to send the data to the Django view
+//         $.ajax({
+//             url: '/get_bills/',  // Replace with the actual URL of your Django view
+//             method: 'GET',  // Change method to GET
+//             data: { start_date: start_date, end_date: end_date },
+//             // Pass the date parameters as query parameters
+//             success: function(response) {
+//                 // Clear existing content
+//                 $('#response').empty();
+
+//                 if ('bill_info' in response) {
+//                     var billInfo = response['bill_info'];
+
+//                     // Create a Bootstrap table to display the response data
+//                     var tableHtml = '<table class="table">';
+//                     tableHtml += '<thead><tr><th>Bill Number</th><th>Bill Date</th><th>Supplier ID</th><th>Account ID</th><th>Amount</th><th>State</th><th>Action</th></tr></thead><tbody>';
+
+//                     $.each(billInfo, function(index, item) {
+//                         tableHtml += '<tr>';
+//                         tableHtml += '<td>' + item.bill_number + '</td>';
+//                         tableHtml += '<td>' + item.bill_date + '</td>';
+//                         tableHtml += '<td>' + item.supplier_id + '</td>';
+//                         tableHtml += '<td>' + item.selected_account_id + '</td>';
+//                         tableHtml += '<td>' + item.amount + '</td>';
+//                         tableHtml += '<td>' + item.state + '</td>';
+//                         tableHtml += '<td><button class="delete-bill-btn" data-bill-id="' + item.bill_number + '">Delete</button></td>';
+//                         // Add more bill details here as needed
+//                         tableHtml += '</tr>';
+//                     });
+
+//                     tableHtml += '</tbody></table>';
+//                     $('#response').html(tableHtml);
+
+//                     // Handle the "Delete" button clicks within the response table
+//                     $('#response').on('click', '.delete-bill-btn', function() {
+//                         var row = $(this).closest('tr');
+//                         // var billIdToDelete = 9
+//                         var billIdToDelete = parseInt($(this).data('bill-id'));
+
+//                         // Use a confirmation dialog to confirm the deletion
+//                         var confirmDelete = confirm('Are you sure you want to delete this bill?');
+
+//                         if (confirmDelete) {
+//                             // Send an AJAX request to delete the bill with the ID billIdToDelete
+//                             $.ajax({
+//                                 url: '/delete_bill/', // Replace with the actual URL of your Django view for deleting a single bill
+//                                 method: 'POST',
+//                                 data: { bill_id: billIdToDelete },
+//                                 headers: {
+//                                     "X-CSRFToken": getCookie("csrftoken")
+//                                 },
+//                                 success: function(data) {
+//                                     // Handle the success response, e.g., remove the row from the table
+//                                     row.remove(); // Remove the row from the table
+//                                 },
+//                                 error: function(xhr, status, error) {
+//                                     console.log('Error:', error);
+//                                 }
+//                             });
+//                         }
+//                     });
+//                 } else {
+//                     alert('No bill information found.');
+//                 }
+//             },
+//             error: function(xhr, status, error) {
+//                 console.log('Error:', error);
+//             }
+//         });
+//     }
+// });
+
+
+// Function to get the CSRF token from cookies
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = $.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+ 
+     
+
+
 
 });
+
+
 
 
             

@@ -20,7 +20,7 @@ def authenticate_odoo():
     except xmlrpc.client.Fault as err:
         return None, None
 
-def get_account_ids(request):
+def get_partner_ids(request):
     uid, models = authenticate_odoo()
     db = 'testkmnss'
     username = 'sameerz09@hotmail.com'
@@ -29,23 +29,23 @@ def get_account_ids(request):
     if uid is not None and models is not None:
         try:
             # Call the custom 'get_all_accounts' method on the 'account.account' model
-            account_data = models.execute_kw(
+            partner_data = models.execute_kw(
                 db,
                 uid,
                 password,
                 'account.account',  # Replace with the actual module name
-                'get_all_accounts',
+                'get_all_partners',
                 [],
             )
 
-            if isinstance(account_data, list):
-                # Process each account object
-                for account in account_data:
+            if isinstance(partner_data, list):
+                # Process each partner object
+                for partner in partner_data:
                     # Do something with the account data
-                    print("Account ID:", account['id'], "Account Name:", account['name'])
+                    print("Partner ID:", partner['id'], "Partner Name:", partner['name'])
 
-                # Return the account data as a JSON response
-                return JsonResponse({'account_data': account_data})
+                # Return the partner data as a JSON response
+                return JsonResponse({'partner_data': partner_data})
             else:
                 return JsonResponse({"error": "Invalid response from Odoo."}, status=500)
 

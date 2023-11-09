@@ -5,10 +5,10 @@ from rest_framework.views import APIView
 class GetLedgerSumView(APIView):
     def get(self, request):
         # Replace these with your Odoo server details
-        odoo_url = 'http://13.49.59.166:8069'
-        odoo_db = 'KMNSS'
-        odoo_username = 'sugam.pandey@gmail.com'
-        odoo_password = 'sugam@kmnss!23#'
+        odoo_url = 'http://127.0.0.1:8069'
+        odoo_db = 'testkmnss'
+        odoo_username = 'sameerz09@hotmail.com'
+        odoo_password = 'Test@111'
 
         # Replace these with your target date range
         start_date = request.GET.get('start_date', '2023-01-01')
@@ -65,7 +65,7 @@ class GetLedgerSumView(APIView):
                     "date": balance['date'],
                     "analytic_account_amount": balance['analytic_account_amount'],
                     "analytic_account_name": balance['analytic_account_name'],
-                    "partner_name": balance['partner_name'],
+                    "partner_id": balance['partner_id'],
                     "partner_type": balance['partner_type'],
                 }
 
